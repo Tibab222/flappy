@@ -6,6 +6,7 @@ mod constants;
 mod pipe;
 mod collisions;
 mod menu;
+mod background;
 
 use bird::BirdPlugin;
 use camera::CameraPlugin;
@@ -13,6 +14,7 @@ use pipe::PipePlugin;
 use collisions::CollisionsPlugin;
 use constants::GameState;
 use menu::MenuPlugin;
+use background::BackgroundPlugin;
 
 fn main() {
     App::new()
@@ -23,5 +25,6 @@ fn main() {
         .add_plugins(PipePlugin)
         .add_plugins(CollisionsPlugin)
         .add_plugins(MenuPlugin)
+        .add_plugins(BackgroundPlugin)
         .run();
 }

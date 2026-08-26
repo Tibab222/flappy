@@ -15,12 +15,11 @@ impl Plugin for CollisionsPlugin {
 }
 
 fn check_collisions(
-    mut commands: Commands,
-    bird_query: Query<(Entity, &Transform), With<Bird>>,
+    bird_query: Query<&Transform, With<Bird>>,
     pipe_query: Query<&Transform, With<Pipe>>,
     mut next_state: ResMut<NextState<GameState>>,
 ) {
-    if let Ok((bird_entity, bird_transform)) = bird_query.single() {
+    if let Ok(bird_transform) = bird_query.single() {
         let bird_pos = bird_transform.translation.truncate();
 
         for pipe_transform in &pipe_query {
