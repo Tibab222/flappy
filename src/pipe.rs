@@ -1,9 +1,11 @@
 use bevy::prelude::*;
 use rand::Rng;
-use crate::constants::{GameState, PIPE_GAP, PIPE_SPAWN_TIME, PIPE_SPEED, PIPE_WIDTH, z_index};
+use crate::{bird::Bird, constants::{GameState, PIPE_GAP, PIPE_SPAWN_TIME, PIPE_SPEED, PIPE_WIDTH, z_index}, score::{HighScore, Score}};
 
 #[derive(Component)]
-pub struct Pipe;
+pub struct Pipe {
+    pub passed: bool,
+}
 
 #[derive(Resource)]
 struct PipeSpawnTimer(Timer);
@@ -17,7 +19,7 @@ impl Plugin for PipePlugin {
             TimerMode::Repeating,
         )))
         .add_systems(OnEnter(GameState::Playing), cleanup_pipes)
-        .add_systems(Update, (spawn_pipes, move_pipes, despawn_pipes).run_if(in_state(GameState::Playing)));
+        .add_systems(Update, (spawn_pipes, move_pipes, despawn_pipes, check_score).run_if(in_state(GameState::Playing)));
     }
 }
 
@@ -39,7 +41,7 @@ fn spawn_pipes(
 
         // down pipe
         commands.spawn((
-            Pipe,
+            Pipe { passed: false },
             Sprite {
                 image: asset_server.load("pipe.png"),
                 custom_size: Some(Vec2::new(PIPE_WIDTH, pipe_height)),
@@ -51,7 +53,7 @@ fn spawn_pipes(
 
         // top pipe
         commands.spawn((
-            Pipe,
+            Pipe { passed: false },
             Sprite {
                 image: asset_server.load("pipe.png"),
                 custom_size: Some(Vec2::new(PIPE_WIDTH, pipe_height)),
@@ -80,5 +82,25 @@ fn despawn_pipes(mut commands: Commands, query: Query<(Entity, &Transform), With
 fn cleanup_pipes(mut commands: Commands, query: Query<Entity, With<Pipe>>) {
     for entity in &query {
         commands.entity(entity).despawn();
+    }
+}
+
+fn check_score(
+    bird_query: Query<&Transform, With<Bird>>,
+    mut pipe_query: Query<(&Transform, &mut Pipe)>,
+    mut score: ResMut<Score>,
+    mut high_score: ResMut<HighScore>,
+) {
+    let Ok(bird_transform) = bird_query.single() else { return };
+
+    for (pipe_transform, mut pipe) in &mut pipe_query {
+        if !pipe.passed && bird_transform.translation.x > pipe_transform.translation.x {
+            score.0 += 1;
+            pipe.passed = true;
+
+            if score.0 > high_score.0 {
+                high_score.0 = score.0;
+            }
+        }
     }
 }

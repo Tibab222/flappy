@@ -7,6 +7,7 @@ mod pipe;
 mod collisions;
 mod menu;
 mod background;
+mod score;
 
 use bird::BirdPlugin;
 use camera::CameraPlugin;
@@ -15,6 +16,7 @@ use collisions::CollisionsPlugin;
 use constants::GameState;
 use menu::MenuPlugin;
 use background::BackgroundPlugin;
+use score::ScorePlugin;
 
 fn main() {
     App::new()
@@ -26,5 +28,6 @@ fn main() {
         .add_plugins(CollisionsPlugin)
         .add_plugins(MenuPlugin)
         .add_plugins(BackgroundPlugin)
+        .add_plugins(ScorePlugin)
         .run();
 }
