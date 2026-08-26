@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 bevy = "0.19.1"
+rand = "0.8.5"
 
 [profile.dev]
 opt-level = 1

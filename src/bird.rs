@@ -1,10 +1,11 @@
 use bevy::prelude::*;
+use crate::constants::GameState;
 use crate::constants::z_index;
 use crate::constants::GRAVITY;
 use crate::constants::JUMP_IMPULSE;
 
 #[derive(Component)]
-struct Bird;
+pub struct Bird;
 
 #[derive(Component)]
 pub struct Velocity(pub f32); // speed on y axis
@@ -14,7 +15,8 @@ pub struct BirdPlugin;
 impl Plugin for BirdPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn_bird);
-        app.add_systems(Update, (apply_gravity, bird_jump, bird_orientation));
+        app.add_systems(OnEnter(GameState::Playing), reset_bird)
+            .add_systems(Update, (apply_gravity, bird_jump, bird_orientation).run_if(in_state(GameState::Playing)));
     }
 }
 
@@ -31,6 +33,14 @@ fn spawn_bird(mut commands: Commands, asset_server: Res<AssetServer>) {
         },
         Transform::from_xyz(0.0, 0.0, z_index::BIRD),
     ));
+}
+
+fn reset_bird(mut query: Query<(&mut Transform, &mut Velocity), With<Bird>>) {
+    if let Ok((mut transform, mut velocity)) = query.single_mut() {
+        transform.translation = Vec3::new(0.0, 0.0, z_index::BIRD);
+        transform.rotation = Quat::IDENTITY; // Remet la rotation à 0
+        velocity.0 = 0.0;
+    }
 }
 
 fn apply_gravity(
