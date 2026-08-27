@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 bevy = "0.19.1"
-rand = "0.8.5"
+rand = "0.10.2"
 
 [profile.dev]
 opt-level = 1
@@ -19,3 +19,6 @@ lto = true
 codegen-units = 1
 panic = "abort"
 strip = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.4.3", features = ["wasm_js"] }

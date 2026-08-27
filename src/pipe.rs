@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use rand::Rng;
 use crate::{bird::Bird, constants::{GameState, PIPE_GAP, PIPE_SPAWN_TIME, PIPE_SPEED, PIPE_WIDTH, z_index}, score::{HighScore, Score}};
 
 #[derive(Component)]
@@ -32,7 +31,7 @@ fn spawn_pipes(
     timer.0.tick(time.delta());
 
     if timer.0.just_finished() {
-        let secret_gap = rand::thread_rng().gen_range(-PIPE_GAP..=PIPE_GAP);
+        let secret_gap = rand::random_range(-PIPE_GAP..=PIPE_GAP);
 
         let spawn_x = 400.0;
         let gap_y = secret_gap;
