@@ -54,7 +54,7 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           mkdir release_pkg
-          cp target/${{ matrix.target }}/release/flappy_bird release_pkg/ 2>/dev/null || cp target/${{ matrix.target }}/release/* release_pkg/ 2>/dev/null
+          cp target/${{ matrix.target }}/release/flappy release_pkg/ 2>/dev/null || cp target/${{ matrix.target }}/release/* release_pkg/ 2>/dev/null
           cp -r assets release_pkg/
           if [ "${{ runner.os }}" = "Linux" ]; then
             tar -czvf ${{ matrix.asset_pkg }} -C release_pkg .
@@ -71,9 +71,16 @@ jobs:
 
   build-and-deploy-web:
     name: Build & Deploy WebAssembly
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust WASM
         uses: dtolnay/rust-toolchain@stable
@@ -95,10 +102,10 @@ jobs:
           cp index.html out/
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: './out'
 
