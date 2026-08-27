@@ -1,4 +1,4 @@
-name: Build Desktop & Web Releases
+name: Build Desktop
 
 on:
   push:
@@ -68,46 +68,3 @@ jobs:
           files: ${{ matrix.asset_pkg }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  build-and-deploy-web:
-    name: Build & Deploy WebAssembly
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{steps.deployment.outputs.page_url}}
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Install Rust WASM
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Install wasm-bindgen-cli
-        run: cargo install wasm-bindgen-cli
-
-      - name: Build WASM
-        run: cargo build --release --target wasm32-unknown-unknown
-
-      - name: Generate JS Bindings
-        run: wasm-bindgen --out-dir ./out --target web target/wasm32-unknown-unknown/release/*.wasm
-
-      - name: Copy Assets and Index
-        run: |
-          cp -r assets out/
-          cp index.html out/
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: './out'
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
