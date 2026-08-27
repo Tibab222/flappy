@@ -55,9 +55,14 @@ fn apply_gravity(
 
 fn bird_jump(
     keyboard: Res<ButtonInput<KeyCode>>, 
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+    touches: Res<Touches>,
     mut query: Query<&mut Velocity, With<Bird>>
 ) {
-    if keyboard.just_pressed(KeyCode::Space) {
+    let just_pressed = keyboard.just_pressed(KeyCode::Space)
+        || mouse_button_input.just_pressed(MouseButton::Left)
+        || touches.just_pressed(0);
+    if just_pressed {
         for mut velocity in &mut query {
             velocity.0 = JUMP_IMPULSE;
         }
