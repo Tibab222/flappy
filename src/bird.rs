@@ -1,3 +1,4 @@
+use bevy::input::touch::TouchPhase;
 use bevy::prelude::*;
 use crate::constants::GameState;
 use crate::constants::z_index;
@@ -56,12 +57,13 @@ fn apply_gravity(
 fn bird_jump(
     keyboard: Res<ButtonInput<KeyCode>>, 
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    touches: Res<Touches>,
+    touch_input: Res<Touches>,
     mut query: Query<&mut Velocity, With<Bird>>
 ) {
     let just_pressed = keyboard.just_pressed(KeyCode::Space)
         || mouse_button_input.just_pressed(MouseButton::Left)
-        || touches.just_pressed(0);
+        || touch_input.any_just_pressed();
+    
     if just_pressed {
         for mut velocity in &mut query {
             velocity.0 = JUMP_IMPULSE;
