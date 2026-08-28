@@ -8,6 +8,7 @@ mod collisions;
 mod menu;
 mod background;
 mod score;
+mod coin;
 
 use bird::BirdPlugin;
 use camera::CameraPlugin;
@@ -17,6 +18,7 @@ use constants::GameState;
 use menu::MenuPlugin;
 use background::BackgroundPlugin;
 use score::ScorePlugin;
+use coin::CoinPlugin;
 
 fn main() {
     App::new()
@@ -29,5 +31,6 @@ fn main() {
         .add_plugins(MenuPlugin)
         .add_plugins(BackgroundPlugin)
         .add_plugins(ScorePlugin)
+        .add_plugins(CoinPlugin)
         .run();
 }

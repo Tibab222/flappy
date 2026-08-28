@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use crate::{bird::Bird, constants::{GameState, PIPE_GAP, PIPE_SPAWN_TIME, PIPE_SPEED, PIPE_WIDTH, z_index}, score::{HighScore, Score}};
+use crate::{bird::Bird, coin::spawn_coin, constants::{GameState, PIPE_GAP, PIPE_SPAWN_TIME, PIPE_SPEED, PIPE_WIDTH, z_index}, score::{HighScore, Score}};
 
 #[derive(Component)]
 pub struct Pipe {
@@ -61,6 +61,8 @@ fn spawn_pipes(
             },
             Transform::from_xyz(spawn_x, gap_y + pipe_y_gap, z_index::PIPES)
         ));
+
+        spawn_coin(&mut commands, &asset_server, spawn_x, gap_y);
     }
 }
 

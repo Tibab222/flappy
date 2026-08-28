@@ -27,7 +27,7 @@ fn spawn_bird(mut commands: Commands, asset_server: Res<AssetServer>) {
         Bird, 
         Velocity(0.0),
         Sprite {
-            image: asset_server.load("yellow_bird.png"),
+            image: asset_server.load("pink_bird.png"),
             custom_size: Some(Vec2::new(34.0, 24.0)),
             ..default()
         },
