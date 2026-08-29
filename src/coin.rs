@@ -7,6 +7,9 @@ use crate::{
 pub const COIN_RADIUS: f32 = 14.0;
 
 #[derive(Component)]
+pub struct WalletText;
+
+#[derive(Component)]
 pub struct Coin;
 
 #[derive(Resource, Default)]
@@ -19,12 +22,29 @@ pub struct CoinPlugin;
 impl Plugin for CoinPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<Wallet>()
+        .add_systems(Startup, display_score)
             .add_systems(OnEnter(GameState::Playing), cleanup_coins)
             .add_systems(
                 Update,
-                (move_coins, collect_coins, despawn_coins).run_if(in_state(GameState::Playing)),
+                (move_coins, collect_coins, despawn_coins, update_wallet_ui).run_if(in_state(GameState::Playing)),
             );
     }
+}
+
+fn display_score(mut commands: Commands, wallet: ResMut<Wallet>) {
+    commands.spawn((
+        WalletText,
+        Text::new(format!("{} coins", wallet.coins.to_string())),
+        TextFont::from_font_size(30.0),
+        TextColor(Color::WHITE),
+        Node {
+            position_type: PositionType::Absolute,
+            top: Val::Px(80.0),
+            left: Val::Percent(47.0),
+            margin: UiRect::left(Val::Px(-30.0)), 
+            ..default()
+        },
+    ));
 }
 
 pub fn spawn_coin(
@@ -84,5 +104,16 @@ fn despawn_coins(mut commands: Commands, query: Query<(Entity, &Transform), With
 fn cleanup_coins(mut commands: Commands, query: Query<Entity, With<Coin>>) {
     for entity in &query {
         commands.entity(entity).despawn();
+    }
+}
+
+fn update_wallet_ui(
+    money: Res<Wallet>,
+    mut query: Query<&mut Text, With<WalletText>>,
+) {
+    if money.is_changed() {
+        for mut text in &mut query {
+            **text = format!("{} coins", money.coins);
+        }
     }
 }
