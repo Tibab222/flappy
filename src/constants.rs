@@ -27,6 +27,7 @@ pub enum GameState {
     Menu,
     Playing,
     GameOver,
+    Shop,
 }
 
 // Colors

@@ -26,8 +26,9 @@ impl Plugin for CoinPlugin {
             .add_systems(OnEnter(GameState::Playing), cleanup_coins)
             .add_systems(
                 Update,
-                (move_coins, collect_coins, despawn_coins, update_wallet_ui).run_if(in_state(GameState::Playing)),
-            );
+                (move_coins, collect_coins, despawn_coins).run_if(in_state(GameState::Playing)),
+            )
+            .add_systems(Update, update_wallet_ui);
     }
 }
 

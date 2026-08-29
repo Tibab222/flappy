@@ -2,6 +2,7 @@ use bevy::prelude::*;
 use crate::bird::Bird;
 use crate::pipe::Pipe;
 use crate::constants::{GameState, PIPE_WIDTH};
+use crate::shop::ActiveBoosters;
 
 const BIRD_SIZE: Vec2 = Vec2::new(30.0, 30.0);
 const PIPE_SIZE: Vec2 = Vec2::new(PIPE_WIDTH, 400.0);
@@ -16,13 +17,15 @@ impl Plugin for CollisionsPlugin {
 
 fn check_collisions(
     bird_query: Query<&Transform, With<Bird>>,
-    pipe_query: Query<&Transform, With<Pipe>>,
+    pipe_query: Query<(Entity, &Transform), With<Pipe>>,
+    mut boosters: ResMut<ActiveBoosters>,
     mut next_state: ResMut<NextState<GameState>>,
+    mut commands: Commands,
 ) {
     if let Ok(bird_transform) = bird_query.single() {
         let bird_pos = bird_transform.translation.truncate();
 
-        for pipe_transform in &pipe_query {
+        for (pipe_entity, pipe_transform) in &pipe_query {
             let pipe_pos = pipe_transform.translation.truncate();
 
             let dx = (bird_pos.x - pipe_pos.x).abs();
@@ -32,8 +35,15 @@ fn check_collisions(
             let overlap_y = dy < (BIRD_SIZE.y + PIPE_SIZE.y) / 2.0;
 
             if overlap_x && overlap_y {
-                next_state.set(GameState::GameOver);
-                break;
+                // boosters
+                if boosters.shield_charges > 0 {
+                    boosters.shield_charges -= 1;
+                    commands.entity(pipe_entity).despawn();
+                    break;
+                } else {
+                    next_state.set(GameState::GameOver);
+                    break;
+                }
             }
         }
 

@@ -9,6 +9,7 @@ mod menu;
 mod background;
 mod score;
 mod coin;
+mod shop;
 
 use bird::BirdPlugin;
 use camera::CameraPlugin;
@@ -19,6 +20,7 @@ use menu::MenuPlugin;
 use background::BackgroundPlugin;
 use score::ScorePlugin;
 use coin::CoinPlugin;
+use shop::ShopPlugin;
 
 fn main() {
     App::new()
@@ -32,5 +34,6 @@ fn main() {
         .add_plugins(BackgroundPlugin)
         .add_plugins(ScorePlugin)
         .add_plugins(CoinPlugin)
+        .add_plugins(ShopPlugin)
         .run();
 }

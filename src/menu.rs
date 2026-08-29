@@ -9,6 +9,7 @@ enum MenuButtonAction {
     Play,
     Quit,
     Menu,
+    Shop,
 }
 
 pub struct MenuPlugin;
@@ -47,11 +48,11 @@ fn setup_menu_ui(mut commands: Commands) {
             ));
 
             spawn_button(parent, "Play", MenuButtonAction::Play);
+            spawn_button(parent, "Shop", MenuButtonAction::Shop);
             spawn_button(parent, "Quit", MenuButtonAction::Quit);
         });
 }
 
-// --- ECRAN GAME OVER ---
 fn setup_gameover_ui(mut commands: Commands) {
     commands
         .spawn((
@@ -70,7 +71,7 @@ fn setup_gameover_ui(mut commands: Commands) {
             parent.spawn((
                 Text::new("GAME OVER"),
                 TextFont::from_font_size(50.0),
-                TextColor(Color::srgb(0.9, 0.2, 0.2)), // Rouge
+                TextColor(Color::srgb(0.9, 0.2, 0.2)),
             ));
 
             spawn_button(parent, "PLAY AGAIN", MenuButtonAction::Menu);
@@ -88,7 +89,7 @@ fn spawn_button(parent: &mut RelatedSpawnerCommands<ChildOf>, text: &str, action
                 border: UiRect::all(Val::Px(3.0)),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
-                border_radius: BorderRadius::all(Val::Px(12.0)), // Bords arrondis
+                border_radius: BorderRadius::all(Val::Px(12.0)),
                 ..default()
             },
             BackgroundColor(COLOR_NORMAL_BTN),
@@ -103,7 +104,6 @@ fn spawn_button(parent: &mut RelatedSpawnerCommands<ChildOf>, text: &str, action
         });
 }
 
-// Click & hover
 fn button_system(
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor, &MenuButtonAction),
@@ -122,6 +122,7 @@ fn button_system(
                         app_exit.write(AppExit::Success);
                     },
                     MenuButtonAction::Menu => next_state.set(GameState::Menu),
+                    MenuButtonAction::Shop => next_state.set(GameState::Shop),
                 }
             }
             Interaction::Hovered => {
@@ -134,7 +135,6 @@ fn button_system(
     }
 }
 
-// Nettoyage de l'UI entre les transitions de states
 fn cleanup_ui(mut commands: Commands, query: Query<Entity, With<MenuUI>>) {
     for entity in &query {
         commands.entity(entity).despawn();
