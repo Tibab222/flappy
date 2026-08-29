@@ -37,7 +37,7 @@ impl Plugin for ShopPlugin {
     }
 }
 
-fn setup_shop_ui(mut commands: Commands, wallet: Res<Wallet>) {
+fn setup_shop_ui(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands
         .spawn((
             Node {
@@ -59,31 +59,50 @@ fn setup_shop_ui(mut commands: Commands, wallet: Res<Wallet>) {
                 TextColor(Color::srgb(1.0, 0.84, 0.0)),
             ));
 
-            parent.spawn((
-                Text::new(format!("Coins disponibles: {}", wallet.coins)),
-                TextFont::from_font_size(20.0),
-                TextColor(Color::WHITE),
-            ));
-
             parent
                 .spawn((
                     Button,
                     Node {
-                        width: Val::Px(280.0),
-                        height: Val::Px(60.0),
-                        justify_content: JustifyContent::Center,
+                        width: Val::Px(340.0),
+                        height: Val::Px(70.0),
+                        flex_direction: FlexDirection::Row,
                         align_items: AlignItems::Center,
-                        border_radius: BorderRadius::all(Val::Px(10.0)),
+                        justify_content: JustifyContent::SpaceBetween,
+                        padding: UiRect::axes(Val::Px(15.0), Val::Px(10.0)),
+                        border_radius: BorderRadius::all(Val::Px(12.0)),
                         ..default()
                     },
                     BackgroundColor(Color::srgb(0.2, 0.6, 0.2)),
                     BuyButton(BoosterType::Shield, 5),
                 ))
                 .with_children(|btn| {
+                    btn.spawn(Node {
+                        flex_direction: FlexDirection::Row,
+                        align_items: AlignItems::Center,
+                        column_gap: Val::Px(12.0),
+                        ..default()
+                    })
+                    .with_children(|left_group| {
+                        left_group.spawn((
+                            ImageNode::new(asset_server.load("shield.png")),
+                            Node {
+                                width: Val::Px(36.0),
+                                height: Val::Px(36.0),
+                                ..default()
+                            },
+                        ));
+
+                        left_group.spawn((
+                            Text::new("Shield (3 pipes)"),
+                            TextFont::from_font_size(18.0),
+                            TextColor(Color::WHITE),
+                        ));
+                    });
+
                     btn.spawn((
-                        Text::new("Shield (3 pipes) - 5 Coins"),
+                        Text::new("5 Coins"),
                         TextFont::from_font_size(18.0),
-                        TextColor(Color::WHITE),
+                        TextColor(Color::srgb(1.0, 0.84, 0.0)),
                     ));
                 });
 
@@ -103,7 +122,7 @@ fn setup_shop_ui(mut commands: Commands, wallet: Res<Wallet>) {
                 ))
                 .with_children(|btn| {
                     btn.spawn((
-                        Text::new("RETOUR"),
+                        Text::new("BACK"),
                         TextFont::from_font_size(22.0),
                         TextColor(Color::WHITE),
                     ));
