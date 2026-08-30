@@ -1,8 +1,10 @@
 use bevy::prelude::*;
 use crate::bird::Bird;
+use crate::coin::Wallet;
 use crate::pipe::Pipe;
 use crate::constants::{GameState, PIPE_WIDTH};
 use crate::shop::ActiveBoosters;
+use crate::storage::save_game_state;
 
 const BIRD_SIZE: Vec2 = Vec2::new(30.0, 30.0);
 const PIPE_SIZE: Vec2 = Vec2::new(PIPE_WIDTH, 400.0);
@@ -21,6 +23,7 @@ fn check_collisions(
     mut boosters: ResMut<ActiveBoosters>,
     mut next_state: ResMut<NextState<GameState>>,
     mut commands: Commands,
+    wallet: Res<Wallet>,
 ) {
     if let Ok(bird_transform) = bird_query.single() {
         let bird_pos = bird_transform.translation.truncate();
@@ -41,14 +44,22 @@ fn check_collisions(
                     commands.entity(pipe_entity).despawn();
                     break;
                 } else {
-                    next_state.set(GameState::GameOver);
+                    handle_game_over(&mut next_state, &wallet);
                     break;
                 }
             }
         }
 
         if bird_pos.y < -300.0 || bird_pos.y > 300.0 {
-            next_state.set(GameState::GameOver);
+            handle_game_over(&mut next_state, &wallet);
         }
     }
+}
+
+fn handle_game_over(
+    next_state: &mut ResMut<NextState<GameState>>,
+    wallet: &Res<Wallet>,
+) {
+    save_game_state(wallet.coins);
+    next_state.set(GameState::GameOver);
 }
